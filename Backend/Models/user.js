@@ -44,6 +44,25 @@ const UserSchema = new mongoose.Schema({
     minlength: 1,
     maxlength: 50,
   },
+  savedRequests: {
+    type: [mongoose.Schema.Types.ObjectId],
+    minlength: 1,
+    maxlength: 50,
+  },
+  accessToken: {
+    type: String,
+    maxlength: 50,
+  },
+  plan: {
+    type: String,
+    maxlength: 50,
+    default: 'free',
+  },
+  statusOfSubscription: {
+    type: Boolean,
+    maxlength: 50,
+    default: false,
+  },
   createdAt: {
     type: Date,
     default: moment().format(),
