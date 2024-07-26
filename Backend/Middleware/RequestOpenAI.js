@@ -5,6 +5,8 @@ const configuration = {
   apiKey: process.env.API_KEY,
 };
 
+console.log(process.env.API_KEY);
+
 const openai = new OpenAI(configuration);
 
 async function RequestOpenAI() {
