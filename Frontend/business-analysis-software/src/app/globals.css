@@ -16,18 +16,39 @@
   }
 }
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+.dark {
+  color: #36323e;
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
+.bg-dark {
+  background-color: #36323e;
+}
+
+.red {
+  color: #ff3e4a;
+}
+
+.bg-red {
+  background-color: #ff3e4a;
+}
+
+.yellow {
+  color: #ffce3e;
+}
+
+.bg-yellow {
+  background-color: #ffce3e;
+}
+
+.dark-red {
+  color: #820a12;
+}
+
+.bg-dark-red {
+  background-color: #820a12;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: #36323e;
 }
