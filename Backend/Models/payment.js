@@ -1,6 +1,6 @@
-const mongoose = require('mongoose');
-const mongoosePaginate = require('mongoose-paginate-v2');
-const moment = require('moment');
+import mongoose from 'mongoose';
+import moment from 'moment';
+import mongoosePaginate from 'mongoose-paginate-v2';
 
 const PaymentSchema = new mongoose.Schema({
   user: {
@@ -15,7 +15,7 @@ const PaymentSchema = new mongoose.Schema({
   },
   paypalUserId: {
     type: String,
-    minlength: 15,
+    minlength: 5,
     maxlength: 100,
     required: true,
   },
@@ -40,4 +40,4 @@ PaymentSchema.plugin(mongoosePaginate);
 
 const Payment = mongoose.model("Payment", PaymentSchema);
 
-module.exports = Payment;
+export {  Payment };

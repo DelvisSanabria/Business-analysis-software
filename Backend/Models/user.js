@@ -1,6 +1,6 @@
-const mongoose = require('mongoose');
-const mongoosePaginate = require('mongoose-paginate-v2');
-const moment = require('moment');
+import mongoose from 'mongoose';
+import moment from 'moment';
+import mongoosePaginate from 'mongoose-paginate-v2';
 
 const UserSchema = new mongoose.Schema({
   name: {
@@ -89,4 +89,4 @@ UserSchema.plugin(mongoosePaginate);
 
 const User = mongoose.model("User", UserSchema);
 
-module.exports = User;
+export { User };

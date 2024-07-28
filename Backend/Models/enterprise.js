@@ -1,6 +1,6 @@
-const mongoose = require('mongoose');
-const mongoosePaginate = require('mongoose-paginate-v2');
-const moment = require('moment');
+import mongoose from 'mongoose';
+import moment from 'moment';
+import mongoosePaginate from 'mongoose-paginate-v2';
 
 const EnterpriseSchema = new mongoose.Schema({
   name: {
@@ -58,4 +58,4 @@ EnterpriseSchema.plugin(mongoosePaginate);
 
 const Enterprise = mongoose.model("Enterprise", EnterpriseSchema);
 
-module.exports = Enterprise;
+export { Enterprise };

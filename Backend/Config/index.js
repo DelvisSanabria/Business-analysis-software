@@ -4,6 +4,7 @@ import cors from 'cors';
 import express from 'express';
 import mongoose from "mongoose";
 import morgan from "morgan";
+import bodyParser from "body-parser";
 import PaymentRoutes from "../Routes/PaymentRoutes.js";
 
 const app = express();
@@ -33,7 +34,7 @@ app.set('port',process.env.PORT || 3001);
 
 //middlewares
 app.use(cors(corsOptions));
-app.use(express.json());
+app.use(bodyParser.json());
 app.use(morgan("dev"));
 app.use("/payment", PaymentRoutes);
 /* 

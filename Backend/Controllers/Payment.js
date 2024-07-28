@@ -1,9 +1,13 @@
 import axios from "axios";
 import { config } from "dotenv";
 config({ path: '../Config/.env' });
+import { Payment } from "../Models/payment.js";
+import mongoose from "mongoose";
 
 
 export const createOrder = async (req, res) => {
+  const { user, amount, enterprise } = await req.query;
+  
   try {
     const order = {
       intent: "CAPTURE",
@@ -11,7 +15,7 @@ export const createOrder = async (req, res) => {
         {
           amount: {
             currency_code: "USD",
-            value: "15.00",
+            value: `${amount}.00`,
           },
         },
       ],
@@ -19,7 +23,7 @@ export const createOrder = async (req, res) => {
         brand_name: "Wuau_Marketing",
         landing_page: "NO_PREFERENCE",
         user_action: "PAY_NOW",
-        return_url: `http://localhost:${process.env.PORT}/payment/capture-order`,
+        return_url: `http://localhost:${process.env.PORT}/payment/capture-order?user=${user}&enterprise=${enterprise}`,
         cancel_url: `http://localhost:${process.env.PORT}/payment/cancel-payment`,
       },
     };
@@ -67,7 +71,7 @@ export const createOrder = async (req, res) => {
 };
 
 export const captureOrder = async (req, res) => {
-  const { token } = req.query;
+  const { token,user, enterprise } = req.query;
 
   try {
     const response = await axios.post(
@@ -82,6 +86,25 @@ export const captureOrder = async (req, res) => {
     );
 
     console.log(response.data);
+
+    console.log(response.data.purchase_units[0].payments.captures);
+
+    if (response.data) {
+      const userObject = new mongoose.Types.ObjectId(user);
+      const enterpriseObject = new mongoose.Types.ObjectId(enterprise);
+      const newPayment = new Payment({
+        user: userObject,
+        enterprise: enterpriseObject,
+        paypalUserId: response.data.payer.payer_id,
+        mountOfPayment: response.data.purchase_units[0].payments.captures[0].amount.value,
+      });
+
+      await newPayment.save();
+      console.log("Payment saved successfully!");
+    } else {
+      console.log("Error no payment found");
+    }
+
 
     res.redirect( `http://localhost:${process.env.PORT}/`);
   } catch (error) {

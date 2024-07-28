@@ -1,6 +1,6 @@
-const mongoose = require('mongoose');
-const mongoosePaginate = require('mongoose-paginate-v2');
-const moment = require('moment');
+import mongoose from 'mongoose';
+import moment from 'moment';
+import mongoosePaginate from 'mongoose-paginate-v2';
 
 const SavedRequestSchema = new mongoose.Schema({
   user: {
@@ -46,4 +46,4 @@ SavedRequestSchema.plugin(mongoosePaginate);
 
 const SavedRequest = mongoose.model("SavedRequest", SavedRequestSchema);
 
-module.exports = SavedRequest;
+export { SavedRequest };
