@@ -114,3 +114,65 @@ export const captureOrder = async (req, res) => {
 };
 
 export const cancelPayment = (req, res) => res.redirect("/");
+
+
+
+export const searchPayment = async (req, res) => {
+  const { user, enterprise } = await req.query;
+
+  try {
+    let query = {};
+
+    if (user) {
+      query.user = new mongoose.Types.ObjectId(user);
+    }
+
+    if (enterprise) {
+      query.enterprise = new mongoose.Types.ObjectId(enterprise);
+    }
+
+    const searchPayments = await Payment.find(query);
+
+    res.status(200).json(searchPayments);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal Server error" });
+  }
+};
+
+export const updatePayment = async (req, res) => {
+  const { id } = req.params;
+  const updateData = req.body;
+
+  try {
+    const updatedPayment = await Payment.findByIdAndUpdate(
+      id,
+      { $set: updateData },
+      { new: true }
+    );
+
+    if (!updatedPayment) {
+      return res.status(404).json({ message: "Payment not found" });
+    }
+
+    res.status(200).json(updatedPayment);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal Server error" });
+  }
+};
+
+
+export const deletePayment = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const deleted = await Payment.findByIdAndDelete(id);
+    if (!deleted) {
+      return res.status(404).json({ message: "Payment not found" });
+    }
+    res.status(200).json({ message: "Payment deleted successfully" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal Server error" });
+  }
+};
