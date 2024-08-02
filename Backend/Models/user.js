@@ -60,7 +60,6 @@ const UserSchema = new mongoose.Schema({
   },
   statusOfSubscription: {
     type: Boolean,
-    maxlength: 50,
     default: false,
   },
   createdAt: {

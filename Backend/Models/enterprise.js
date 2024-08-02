@@ -46,6 +46,9 @@ const EnterpriseSchema = new mongoose.Schema({
     default: moment().format(),
     required: true
   },
+  logo:{
+    type: String,
+  },
   deleted: {
     type: Boolean,
     default: false,

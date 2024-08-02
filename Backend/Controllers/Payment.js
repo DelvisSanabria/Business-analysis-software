@@ -2,6 +2,7 @@ import axios from "axios";
 import { config } from "dotenv";
 config({ path: '../Config/.env' });
 import { Payment } from "../Models/payment.js";
+import { User } from "../Models/user.js";
 import mongoose from "mongoose";
 
 
@@ -92,15 +93,36 @@ export const captureOrder = async (req, res) => {
     if (response.data) {
       const userObject = new mongoose.Types.ObjectId(user);
       const enterpriseObject = new mongoose.Types.ObjectId(enterprise);
+      const amount = response.data.purchase_units[0].payments.captures[0].amount.value;
       const newPayment = new Payment({
         user: userObject,
         enterprise: enterpriseObject,
         paypalUserId: response.data.payer.payer_id,
-        mountOfPayment: response.data.purchase_units[0].payments.captures[0].amount.value,
+        mountOfPayment: amount,
       });
 
       await newPayment.save();
       console.log("Payment saved successfully!");
+
+      let newPlan = null;
+      if (amount == '15.00') {
+        newPlan = 'basic';
+      } else if (amount == '25.00') {
+        newPlan = 'premium';
+      }
+
+      const update = { $push: { payments: newPayment._id } };
+      if (newPlan) {
+        update.$set = { plan: newPlan };
+      }
+
+      await User.findByIdAndUpdate(
+        userObject,
+        update,
+        { new: true }
+      );
+
+      console.log("Payment added to user's payments array and plan updated if necessary!");
     } else {
       console.log("Error no payment found");
     }
@@ -114,8 +136,6 @@ export const captureOrder = async (req, res) => {
 };
 
 export const cancelPayment = (req, res) => res.redirect("/");
-
-
 
 export const searchPayment = async (req, res) => {
   const { user, enterprise } = await req.query;

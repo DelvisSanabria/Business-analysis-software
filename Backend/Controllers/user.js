@@ -1,14 +1,9 @@
-import axios from "axios";
 import { config } from "dotenv";
 config({ path: '../Config/.env' });
-import { Payment } from "../Models/payment.js";
 import mongoose from "mongoose";
 import { User } from "../Models/user.js";;
 import bcrypt from "bcryptjs";
-import fs from "fs";
 
-
-const domain = process.env.DOMAIN || "http://localhost:3001";
 
 const ObjectId = mongoose.Types.ObjectId;
 
@@ -80,41 +75,16 @@ export const createUser = async (req, res) => {
   }
 };
 
-
-//falta por agregar el token con JWT
-export const login = async (req, res) => {
-  const { email, password } = req.body;
-  try {
-    let user = await User.findOne({ email: email });
-    if (user) {
-      const match = await bcrypt.compare(password, user.password);
-      if (match) {
-        return res.status(200).json(user);
-      } else {
-        return res.status(406).json({ password: "Wrong password" });
-      }
-    } else {
-      return res.status(404).json({ email: "Unregistered mail" });
-    }
-  } catch (error) {
-    console.error(`${error.name}: ${error.message}`);
-    return res.status(500).json({ name: error.name, message: error.message });
-  }
-};
-
-//falta actualizar para poder actualizar el Tokken
 export const updateUser = async (req, res) => {
   try {
     const usEmail = req.params.email;
     const newData = req.body;
     const user = await User.findOne({ email: usEmail });
     if (!user) {
-      return res
-        .status(404)
-        .json({ message: "A user was not found with that email" });
+      return res.status(404).json({ message: "A user was not found with that email" });
     }
 
-    let update = { $set: {} };
+    let update = { $set: {}, $push: {} };
 
     if (newData.name) {
       update.$set.name = newData.name;
@@ -144,18 +114,31 @@ export const updateUser = async (req, res) => {
     if (newData.role) {
       update.$set.role = newData.role;
     }
-    if (newData.enterprise) {
-      
+    if (newData.enterprises) {
+      update.$push.enterprises = { $each: newData.enterprises.map(id => mongoose.Types.ObjectId(id)) };
     }
+    if (newData.payments) {
+      update.$push.payments = { $each: newData.payments.map(id => mongoose.Types.ObjectId(id)) };
+    }
+    if (newData.savedRequests) {
+      update.$push.savedRequests = { $each: newData.savedRequests.map(id => mongoose.Types.ObjectId(id)) };
+    }
+
+    update.$set.updatedAt = moment().format();
+
+    if (!Object.keys(update.$set).length) delete update.$set;
+    if (!Object.keys(update.$addToSet).length) delete update.$addToSet;
+
     const updated = await User.findOneAndUpdate({ email: usEmail }, update, {
       new: true,
     });
-    res.status(201).json(updated);
+    res.status(200).json(updated);
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: error.message });
   }
 };
+
 
 export const deleteUser= async (req, res) => {
   try {

@@ -2,7 +2,6 @@ import { config } from "dotenv";
 config({ path: '../Config/.env' });
 import mongoose from "mongoose";
 import { Enterprise } from "../Models/enterprise.js";;
-import bcrypt from "bcryptjs";
 import fs from "fs";
 
 
@@ -10,40 +9,38 @@ const domain = process.env.DOMAIN || "http://localhost:3001";
 
 const ObjectId = mongoose.Types.ObjectId;
 
-export const ObtainAllUsers = async (req, res) => {
+export const ObtainAllEnterprises = async (req, res) => {
   try {
-    const { page, limit, role } = req.query;
+    const { page, limit } = req.query;
     const options = {
       page: parseInt(page, 10) || 1,
       limit: parseInt(limit, 10) || 6,
       sort: { createdAt: -1 },
-      customLabels: { docs: "users", totalDocs: "count" }
+      customLabels: { docs: "enterprises", totalDocs: "count" }
     };
     let query = { deleted: false };
-    if (role === "client") {
-      query = { ...query, role: "client" };
-    }
-    let users = await User.paginate(query, options);
+    let enterprises = await Enterprise.paginate(query, options);
 
-    res.status(200).json(users);
+    res.status(200).json(enterprises);
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: error.message });
   }
 };
 
-export const searchUser = async (req, res) => {
+export const searchEnterprise = async (req, res) => {
   try {
-    const userData = req.query.term;
+    const enterpriseData = req.query.term;
     let filteredUser = [];
-    if (ObjectId.isValid(userData)) {
-      filteredUser = await User.find({ _id: new ObjectId(userData) });
+    if (ObjectId.isValid(enterpriseData)) {
+      filteredEnterprise = await Enterprise.find({ _id: new ObjectId(enterpriseData) });
     } else {
-      filteredUser = await User.find({
+      filteredEnterprise = await Enterprise.find({
         $or: [
-          { name: userData.toLocaleLowerCase() },
-          { lastName: userData.toLocaleLowerCase() },
-          { email: userData.toLocaleLowerCase() },
+          { name: userData },
+          { fieldOfWork: userData },
+          { country: userData },
+          { city: userData },
         ]
       });
     }
@@ -54,10 +51,10 @@ export const searchUser = async (req, res) => {
   }
 };
 
-export const obtainUserByEmail = async (req, res) => {
+export const obtainEnterpriseByID = async (req, res) => {
   try {
-    let user = await User.findOne({ email: req.params.email });
-    res.status(201).json(user);
+    let enterprise = await Enterprise.findOne({ _id: req.params.id });
+    res.status(201).json(enterprise);
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: error.message });
@@ -65,13 +62,12 @@ export const obtainUserByEmail = async (req, res) => {
 };
 
 
-export const createUser = async (req, res) => {
+export const createEnterprise = async (req, res) => {
   try {
-    const salt = await bcrypt.genSalt();
-    const hash = await bcrypt.hash(req.body.password, salt);
-    let user = new User({ ...req.body, password: hash });
-    await user.save();
-    res.status(201).json(user);
+    const userObject = new mongoose.Types.ObjectId(req.body.user);
+    let enterprise = new Enterprise({ ...req.body, user: userObject });
+    await enterprise.save();
+    res.status(201).json(enterprise);
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: error.message });
@@ -85,7 +81,7 @@ export const uploadImage = async (req, res) => {
       return res.status(404).json({ enterprise: "Company Not Found Unable to Update Image" });
     }
     if (req.file) {
-      enterprise.avatar = `${domain}/images/enterprises/${req.file.filename}`;
+      enterprise.logo = `${domain}/images/enterprises/${req.file.filename}`;
       await enterprise.save();
     }
     return res.status(200).json(enterprise);
@@ -95,81 +91,51 @@ export const uploadImage = async (req, res) => {
   }
 };
 
-export const login = async (req, res) => {
-  const { email, password } = req.body;
+export const updateEnterprise = async (req, res) => {
   try {
-    let user = await User.findOne({ email: email });
-    if (user) {
-      const match = await bcrypt.compare(password, user.password);
-      if (match) {
-        return res.status(200).json(user);
-      } else {
-        return res.status(406).json({ password: "La contraseña es incorrecta" });
-      }
-    } else {
-      return res.status(404).json({ email: "Correo no registrado" });
-    }
-  } catch (error) {
-    console.error(`${error.name}: ${error.message}`);
-    return res.status(500).json({ name: error.name, message: error.message });
-  }
-};
-
-export const updateUser = async (req, res) => {
-  try {
-    const usEmail = req.params.email;
+    const enterpriseID = req.params.id;
     const newData = req.body;
-    const user = await User.findOne({ email: usEmail });
-    if (!user) {
+    const enterprise = await Enterprise.findOne({ _id: enterpriseID });
+    if (!enterprise) {
       return res
         .status(404)
-        .json({ message: "No se encontró un usuario con ese correo" });
+        .json({ message: "no saved company found associated with the provided ID" });
     }
     const imagePath = req.file ? req.file.path : undefined;
 
     let update = { $set: {} };
 
     if (imagePath) {
-      update.$set.avatar = `${domain}/${imagePath}`;
-      const startIndex = user.avatar.indexOf("images");
-      const avatarFilePathPrev = user.avatar.substring(startIndex);
-      const filePath = avatarFilePathPrev
+      update.$set.logo = `${domain}/${imagePath}`;
+      const startIndex = enterprise.logo.indexOf("images");
+      const logoFilePathPrev = enterprise.logo.substring(startIndex);
+      const filePath = logoFilePathPrev
       if (fs.existsSync(filePath)) {
         fs.unlinkSync(filePath);
-        console.log("Archivo eliminado:", filePath);
+        console.log("Deleted file:", filePath);
       } else {
-        console.log("El archivo no existe:", filePath);
+        console.log("The file does not exists:", filePath);
       }
     }
     if (newData.name) {
       update.$set.name = newData.name;
     }
-    if (newData.email) {
-      update.$set.email = newData.email;
+    if (newData.fieldOfWork) {
+      update.$set.fieldOfWork = newData.fieldOfWork;
     }
-    if (newData.password) {
-      const match = await bcrypt.compare(newData.password, user.password);
-      if (!match) {
-        const salt = await bcrypt.genSalt();
-        const hash = await bcrypt.hash(newData.password, salt);
-        update.$set.password = hash;
-      } else {
-        return res.status(406).json({ password: "La nueva contraseña debe ser diferente de la última" });
-      }
+    if (newData.country) {
+      update.$set.country = newData.country;
     }
-    if (newData.lastName) {
-      update.$set.lastName = newData.lastName;
+    if (newData.city) {
+      update.$set.city = newData.city;
     }
-    if (newData.phone) {
-      update.$set.phone = newData.phone;
+    if (newData.description) {
+      update.$set.description = newData.description;
     }
-    if (newData.address) {
-      update.$set.address = newData.address;
+    if (newData.user) {
+      update.$set.user = new mongoose.Types.ObjectId(newData.user);
     }
-    if (newData.role) {
-      update.$set.role = newData.role;
-    }
-    const updated = await User.findOneAndUpdate({ email: usEmail }, update, {
+    const updated = await Enterprise.findOneAndUpdate({ _id: enterpriseID }, update, {
       new: true,
     });
     res.status(201).json(updated);
@@ -179,18 +145,18 @@ export const updateUser = async (req, res) => {
   }
 };
 
-export const deleteUser= async (req, res) => {
+export const deleteEnterprise= async (req, res) => {
   try {
-    const userEmail = req.params.email;
+    const enterpriseID = req.params.id;
 
     try {
-      const updated = await User.findOneAndUpdate({ email: userEmail }, { deleted: true }, { new: true });
+      const updated = await Enterprise.findOneAndUpdate({ _id: enterpriseID }, { deleted: true }, { new: true });
 
       if (!updated) {
-        return res.status(404).json({ message: 'User not was updated' });
+        return res.status(404).json({ message: 'Enterprise not was updated' });
       }
 
-      res.json(updated);
+      res.status(201).json(updated);
     } catch (error) {
       console.log(error);
       res.status(500).json({ message: error.message });

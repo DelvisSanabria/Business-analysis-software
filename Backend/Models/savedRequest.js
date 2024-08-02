@@ -17,18 +17,6 @@ const SavedRequestSchema = new mongoose.Schema({
     type: [Object],
     required: true
   },
-  accessToken: {
-    type: String,
-    required: true
-  },
-  plan: {
-    type: String,
-    required: true
-  },
-  statusOfSubscription: {
-    type: String,
-    required: true
-  },
   createdAt: {
     type: Date,
     default: moment().format(),

@@ -12,16 +12,16 @@ import {
 
 const router = Router();
 
-router.get("/create-order", createOrder);
+router.post("/create-order", createOrder);
 
-router.get("/capture-order", captureOrder);
+router.post("/capture-order", captureOrder);
 
 router.get("/cancel-order", cancelPayment);
 
-router.get("/updatePayment", updatePayment);
+router.patch("/updatePayment", updatePayment);
 
 router.get("/searchPayment/:id", searchPayment);
 
-router.get("/deletePayment/:id", deletePayment);
+router.patch("/deletePayment/:id", deletePayment);
 
 export default router;

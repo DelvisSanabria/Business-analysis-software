@@ -1,29 +1,23 @@
 import { Router } from "express";
 import { checkEmail } from "../Middleware/CheckEmail";
 import { UploadImage } from "../Middleware/UploadImage";
-import { createUser, deleteUser, login, updateUser, uploadImage , obtainUserByEmail, searchUser, ObtainAllUsers} from "../Controllers/user";
+import { createUser,deleteUser, updateUser, uploadImage , obtainUserByEmail, searchUser, ObtainAllUsers} from "../Controllers/user";
+import { isAuth, isAdmin } from "../Middleware/Auth";
 
 const routerUser = Router();
 
 
-routerUser.get("/", ObtainAllUsers);
+routerUser.get("/", isAdmin, ObtainAllUsers);
 
-routerUser.get("/search/:term", searchUser);
+routerUser.get("/search/:term", isAdmin, searchUser);
 
 routerUser.get("/:email", obtainUserByEmail);
 
-routerUser.post("/createUser", createUser);
+routerUser.post("/createUser", checkEmail, createUser);
 
-routerUser.post("/signup", checkEmail,  createUser);
+routerUser.patch("/:email", isAuth, updateUser);
 
-//borrar luego de usar de ejemplo para enterprises
-routerUser.post("/uploadImage", UploadImage.upload.single("image"), uploadImage);
-
-routerUser.post("/login", login);
-
-routerUser.patch("/:email", upload.single("image"), updateUser);
-
-routerUser.patch("/delete/:email", deleteUser);
+routerUser.patch("/delete/:email", isAuth, isAdmin, deleteUser);
 
 
 export default routerUser;
