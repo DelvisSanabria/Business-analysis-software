@@ -9,7 +9,7 @@ export const generateToken = (user) => {
       role: user.role,
       plan: user.plan,
     },
-    process.env.JWT_SECRET,
+    process.env.SECRET,
     {
       expiresIn: "2h",
     }
@@ -34,13 +34,22 @@ export const isAuth = (req, res, next) => {
 }
 
 export const isAdmin = (req, res, next) => {
-  if (req.user) {
-    if (req.user.role === "admin") {
-      next();
-    } else {
-      return res.status(403).send({ message: "Unauthorized: Admin role required" });
-    }
+  const authorization = req.headers.authorization;
+  if (authorization) {
+    const token = authorization.slice(7, authorization.length);
+    jswebtoken.verify(token, process.env.SECRET, (err, decode) => {
+      if (err) {
+        res.status(401).send({ message: "Invalid Token" });
+      } else {
+        req.user = decode;
+        if(decode.role === "admin"){
+        next();
+        }else{
+          res.status(401).send({ message: "Invalid Token" });
+        }
+      }
+    });
   } else {
-    return res.status(401).send({ message: "No Token Provided" });
+    res.status(401).send({ message: "No Token" });
   }
-};
+}

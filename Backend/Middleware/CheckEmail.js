@@ -1,9 +1,13 @@
+import { config } from "dotenv";
+config({ path: '../Config/.env' });
+import { User } from "../Models/user.js";
+
 export const checkEmail = (req, res, next) => {
   const { email } = req.body;
   User.findOne({ email: email })
     .then(user => {
       if (user) {
-        return res.status(409).json({ email: "Correo ya registrado" });
+        return res.status(409).json({ email: "this email already exists" });
       }
       else {
         next();
@@ -11,6 +15,6 @@ export const checkEmail = (req, res, next) => {
     })
     .catch(err => {
       console.error(err);
-      res.status(500).json({ error: "Error al verificar el correo electrónico" });
+      res.status(500).json({ error: "An error occurred while verifying the email" });
     });
 };

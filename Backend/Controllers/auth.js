@@ -1,7 +1,7 @@
 import { config } from "dotenv";
 config({ path: '../Config/.env' });
 import { User } from "../Models/user.js";;
-import bcrypt from "bcryptjs";
+import bcrypt from "bcrypt";
 import { generateToken } from "../Middleware/Auth.js";
 
 export const login = async (req, res) => {

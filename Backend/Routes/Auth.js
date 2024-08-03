@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { checkEmail } from "../Middleware/CheckEmail";
-import { createUser} from "../Controllers/user";
-import { login } from "../Controllers/auth";
+import { checkEmail } from "../Middleware/CheckEmail.js";
+import { createUser} from "../Controllers/user.js";
+import { login } from "../Controllers/auth.js";
 
 const routerAuth = Router();
 

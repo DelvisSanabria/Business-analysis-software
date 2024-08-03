@@ -6,6 +6,8 @@ import mongoose from "mongoose";
 import morgan from "morgan";
 import bodyParser from "body-parser";
 import PaymentRoutes from "../Routes/PaymentRoutes.js";
+import UserRoutes from "../Routes/UserRoutes.js";
+import Auth from "../Routes/Auth.js";
 
 const app = express();
 /* const userRouter = require("./Routes/Users");
@@ -37,6 +39,8 @@ app.use(cors(corsOptions));
 app.use(bodyParser.json());
 app.use(morgan("dev"));
 app.use("/payment", PaymentRoutes);
+app.use("/users", UserRoutes)
+app.use("/auth", Auth)
 /* 
 
 app.use("/images", express.static("images"));

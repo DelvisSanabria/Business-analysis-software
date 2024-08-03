@@ -1,8 +1,7 @@
 import { Router } from "express";
-import { checkEmail } from "../Middleware/CheckEmail";
-import { UploadImage } from "../Middleware/UploadImage";
-import { createUser,deleteUser, updateUser, uploadImage , obtainUserByEmail, searchUser, ObtainAllUsers} from "../Controllers/user";
-import { isAuth, isAdmin } from "../Middleware/Auth";
+import { checkEmail } from "../Middleware/CheckEmail.js";
+import { createUser,deleteUser, updateUser , obtainUserByEmail, searchUser, ObtainAllUsers} from "../Controllers/user.js";
+import { isAuth, isAdmin } from "../Middleware/Auth.js";
 
 const routerUser = Router();
 
@@ -13,9 +12,9 @@ routerUser.get("/search/:term", isAdmin, searchUser);
 
 routerUser.get("/:email", obtainUserByEmail);
 
-routerUser.post("/createUser", checkEmail, createUser);
+routerUser.post("/create-user", checkEmail, createUser);
 
-routerUser.patch("/:email", isAuth, updateUser);
+routerUser.patch("/update/:email", isAuth, updateUser);
 
 routerUser.patch("/delete/:email", isAuth, isAdmin, deleteUser);
 

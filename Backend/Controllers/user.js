@@ -2,7 +2,8 @@ import { config } from "dotenv";
 config({ path: '../Config/.env' });
 import mongoose from "mongoose";
 import { User } from "../Models/user.js";;
-import bcrypt from "bcryptjs";
+import bcrypt from "bcrypt";
+import moment from "moment";
 
 
 const ObjectId = mongoose.Types.ObjectId;
@@ -30,26 +31,32 @@ export const ObtainAllUsers = async (req, res) => {
 };
 
 export const searchUser = async (req, res) => {
+  const ObjectId = mongoose.Types.ObjectId;
   try {
-    const userData = req.query.term;
-    let filteredUser = [];
-    if (ObjectId.isValid(userData)) {
-      filteredUser = await User.find({ _id: new ObjectId(userData) });
+    const term = req.params.term;
+
+    let filteredUsers;
+    if (ObjectId.isValid(term)) {
+      filteredUsers = await User.find({ _id: new ObjectId(term) });
     } else {
-      filteredUser = await User.find({
+      const regex = new RegExp(term, 'i');
+      filteredUsers = await User.find({
         $or: [
-          { name: userData.toLocaleLowerCase() },
-          { lastName: userData.toLocaleLowerCase() },
-          { email: userData.toLocaleLowerCase() },
-        ]
+          { name: { $regex: regex } },
+          { lastName: { $regex: regex } },
+          { email: { $regex: regex } },
+        ],
       });
     }
-    res.status(201).json(filteredUser);
+
+    res.status(200).json(filteredUsers);
   } catch (error) {
-    console.log(error);
+    console.error(error);
     res.status(500).json({ message: error.message });
   }
 };
+
+
 
 export const obtainUserByEmail = async (req, res) => {
   try {
@@ -64,10 +71,29 @@ export const obtainUserByEmail = async (req, res) => {
 
 export const createUser = async (req, res) => {
   try {
-    const salt = await bcrypt.genSalt();
-    const hash = await bcrypt.hash(req.body.password, salt);
-    let user = new User({ ...req.body, password: hash });
+    const { password, ...userData } = req.body;
+
+    if (!password) {
+      return res.status(400).json({ message: 'Password is required' });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const hash = await bcrypt.hash(password, salt);
+
+    const convertedData = {
+      ...userData,
+      password: hash,
+      enterprises: userData.enterprises?.map((id) =>
+        new mongoose.Types.ObjectId(id)
+      ),
+      payments: userData.payments?.map((id) => new mongoose.Types.ObjectId(id)),
+      savedRequests: userData.savedRequests?.map((id) =>
+        new mongoose.Types.ObjectId(id)
+      ),
+    };
+    const user = new User(convertedData);
     await user.save();
+
     res.status(201).json(user);
   } catch (error) {
     console.log(error);
@@ -105,9 +131,6 @@ export const updateUser = async (req, res) => {
     if (newData.lastName) {
       update.$set.lastName = newData.lastName;
     }
-    if (newData.accessToken) {
-      update.$set.accessToken = newData.accessToken;
-    }
     if (newData.plan) {
       update.$set.plan = newData.plan;
     }
@@ -115,19 +138,19 @@ export const updateUser = async (req, res) => {
       update.$set.role = newData.role;
     }
     if (newData.enterprises) {
-      update.$push.enterprises = { $each: newData.enterprises.map(id => mongoose.Types.ObjectId(id)) };
+      update.$push.enterprises = { $each: newData.enterprises.map(id => new mongoose.Types.ObjectId(id)) };
     }
     if (newData.payments) {
-      update.$push.payments = { $each: newData.payments.map(id => mongoose.Types.ObjectId(id)) };
+      update.$push.payments = { $each: newData.payments.map(id => new mongoose.Types.ObjectId(id)) };
     }
     if (newData.savedRequests) {
-      update.$push.savedRequests = { $each: newData.savedRequests.map(id => mongoose.Types.ObjectId(id)) };
+      update.$push.savedRequests = { $each: newData.savedRequests.map(id => new mongoose.Types.ObjectId(id)) };
     }
 
     update.$set.updatedAt = moment().format();
 
     if (!Object.keys(update.$set).length) delete update.$set;
-    if (!Object.keys(update.$addToSet).length) delete update.$addToSet;
+    if (!Object.keys(update.$set).length) delete update.$set;
 
     const updated = await User.findOneAndUpdate({ email: usEmail }, update, {
       new: true,

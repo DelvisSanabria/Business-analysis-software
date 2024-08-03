@@ -49,10 +49,6 @@ const UserSchema = new mongoose.Schema({
     minlength: 1,
     maxlength: 50,
   },
-  accessToken: {
-    type: String,
-    maxlength: 50,
-  },
   plan: {
     type: String,
     maxlength: 50,
