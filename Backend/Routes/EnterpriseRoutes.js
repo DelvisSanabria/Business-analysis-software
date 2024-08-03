@@ -1,25 +1,25 @@
 import { Router } from "express";
-import { checkEmail } from "../Middleware/CheckEmail";
-import { UploadImage } from "../Middleware/UploadImage";
-import { createEnterprise,deleteEnterprise, updateEnterprise, uploadImage , obtainEnterpriseByID, searchEnterprise, ObtainAllEnterprises} from "../Controllers/enterprise";
-import { isAuth, isAdmin } from "../Middleware/Auth";
+import { checkEmail } from "../Middleware/CheckEmail.js";
+import { upload } from "../Middleware/UploadImage.js";
+import { createEnterprise,deleteEnterprise, updateEnterprise, uploadImage , obtainEnterpriseByID, searchEnterprise, ObtainAllEnterprises} from "../Controllers/enterprise.js";
+import { isAuth, isAdmin } from "../Middleware/Auth.js";
 
-const routerUser = Router();
-
-
-routerUser.get("/", isAuth, isAdmin, ObtainAllEnterprises);
-
-routerUser.get("/search/:term", isAuth, isAdmin, searchEnterprise);
-
-routerUser.get("/:id", obtainEnterpriseByID);
-
-routerUser.post("/createUser", checkEmail, createEnterprise);
-
-routerUser.post("/uploadImage", UploadImage.upload.single("logo"), uploadImage);
-
-routerUser.patch("/:id", isAuth, upload.single("logo"), updateEnterprise);
-
-routerUser.patch("/delete/:id", isAuth, isAdmin, deleteEnterprise);
+const routerEnterprise = Router();
 
 
-export default routerUser;
+routerEnterprise.get("/", isAuth, isAdmin, ObtainAllEnterprises);
+
+routerEnterprise.get("/search/:term", isAuth, isAdmin, searchEnterprise);
+
+routerEnterprise.get("/:id",isAuth, obtainEnterpriseByID);
+
+routerEnterprise.post("/createEnterprise", checkEmail, createEnterprise);
+
+routerEnterprise.post("/uploadImage/:id",isAuth, upload.single("image"), uploadImage);
+
+routerEnterprise.patch("/update/:id", isAuth, upload.single("image"), updateEnterprise);
+
+routerEnterprise.patch("/delete/:id", isAuth, isAdmin, deleteEnterprise);
+
+
+export default routerEnterprise;

@@ -13,16 +13,16 @@ import { isAdmin, isAuth } from "../Middleware/Auth.js";
 
 const SavedRequestRouter = Router();
 
-SavedRequestRouter.get("/allsavedRequest", isAuth, isAdmin, obtainAllSavedRequest);
+SavedRequestRouter.get("/", isAuth, isAdmin, obtainAllSavedRequest);
 
-SavedRequestRouter.get("/saveRequest", isAuth, newSavedRequest);
+SavedRequestRouter.post("/saveRequest", isAuth, newSavedRequest);
 
-SavedRequestRouter.get("/searchRequest",isAuth, searchSavedRequest);
+SavedRequestRouter.get("/search/:term",isAuth, searchSavedRequest);
 
-SavedRequestRouter.get("/updateSavedRequest/:id", isAuth, updateSavedRequest);
+SavedRequestRouter.patch("/update/:id", isAuth, updateSavedRequest);
 
 SavedRequestRouter.get("/searchRequest/:id", isAuth, searchRequestByID);
 
-SavedRequestRouter.get("/deleteSavedRequest/:id", isAuth, isAdmin, deleteSavedRequest);
+SavedRequestRouter.patch("/delete/:id", isAuth, isAdmin, deleteSavedRequest);
 
 export default SavedRequestRouter;

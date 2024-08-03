@@ -7,14 +7,14 @@ import morgan from "morgan";
 import bodyParser from "body-parser";
 import PaymentRoutes from "../Routes/PaymentRoutes.js";
 import UserRoutes from "../Routes/UserRoutes.js";
+import EnterpriseRoutes from "../Routes/EnterpriseRoutes.js";
 import Auth from "../Routes/Auth.js";
+import SavedRequest from "../Routes/SavedRequest.js";
+import SendEmailRoutes from "../Routes/SendEmailRoutes.js";
+import ContactRoutes from "../Routes/ContactRoutes.js";
 
 const app = express();
-/* const userRouter = require("./Routes/Users");
 
-const mailRouter = require("./Controllers/EmailSender");
-const SavedRequest = require("./Routes/SavedRequest");
-*/
 const corsOptions = {
   origin: "*",
   optionsSuccessStatus: 200,
@@ -41,14 +41,11 @@ app.use(morgan("dev"));
 app.use("/payment", PaymentRoutes);
 app.use("/users", UserRoutes)
 app.use("/auth", Auth)
-/* 
-
-app.use("/images", express.static("images"));
-app.use("/users", userRouter);
-
-app.use("/SavedRequest", SavedRequest);
-app.use("/mailsender", mailRouter); */
-
+app.use("/enterprises", EnterpriseRoutes)
+app.use("/savedRequest", SavedRequest)
+app.use("/passRecovery" , SendEmailRoutes)
+app.use("/contact", ContactRoutes);
+app.use("/images", express.static("images"))
 
 
 app.listen(app.get('port'), '0.0.0.0', () => {

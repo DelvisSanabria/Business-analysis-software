@@ -56,8 +56,6 @@ export const searchUser = async (req, res) => {
   }
 };
 
-
-
 export const obtainUserByEmail = async (req, res) => {
   try {
     let user = await User.findOne({ email: req.params.email });

@@ -28,28 +28,34 @@ export const ObtainAllEnterprises = async (req, res) => {
   }
 };
 
+
 export const searchEnterprise = async (req, res) => {
+  const ObjectId = mongoose.Types.ObjectId;
   try {
-    const enterpriseData = req.query.term;
-    let filteredUser = [];
-    if (ObjectId.isValid(enterpriseData)) {
-      filteredEnterprise = await Enterprise.find({ _id: new ObjectId(enterpriseData) });
+    const term = req.params.term;
+
+    let filteredEnterprises;
+    if (ObjectId.isValid(term)) {
+      filteredEnterprises = await Enterprise.find({ _id: new ObjectId(term) });
     } else {
-      filteredEnterprise = await Enterprise.find({
+      const regex = new RegExp(term, 'i');
+      filteredEnterprises = await Enterprise.find({
         $or: [
-          { name: userData },
-          { fieldOfWork: userData },
-          { country: userData },
-          { city: userData },
+          { name: { $regex: regex } },
+          { fieldOfWork: { $regex: regex } },
+          { country: { $regex: regex } },
+          { city: { $regex: regex } },
         ]
       });
     }
-    res.status(201).json(filteredUser);
+
+    res.status(200).json(filteredEnterprises);
   } catch (error) {
-    console.log(error);
+    console.error(error);
     res.status(500).json({ message: error.message });
   }
 };
+
 
 export const obtainEnterpriseByID = async (req, res) => {
   try {
@@ -76,7 +82,7 @@ export const createEnterprise = async (req, res) => {
 
 export const uploadImage = async (req, res) => {
   try {
-    let enterprise = await Enterprise.findById(req.body.id);
+    let enterprise = await Enterprise.findById(req.params.id);
     if (!enterprise) {
       return res.status(404).json({ enterprise: "Company Not Found Unable to Update Image" });
     }
@@ -153,7 +159,7 @@ export const deleteEnterprise= async (req, res) => {
       const updated = await Enterprise.findOneAndUpdate({ _id: enterpriseID }, { deleted: true }, { new: true });
 
       if (!updated) {
-        return res.status(404).json({ message: 'Enterprise not was updated' });
+        return res.status(404).json({ message: 'Enterprise not was deleted' });
       }
 
       res.status(201).json(updated);

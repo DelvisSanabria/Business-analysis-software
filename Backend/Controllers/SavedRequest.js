@@ -1,11 +1,7 @@
 import { config } from "dotenv";
 config({ path: '../Config/.env' });
 import mongoose from "mongoose";
-import { SavedRequest } from "../Models/savedRequest.js";;
-import bcrypt from "bcryptjs";
-
-
-const ObjectId = mongoose.Types.ObjectId;
+import { SavedRequest } from "../Models/savedRequest.js";
 
 export const obtainAllSavedRequest = async (req, res) => {
   try {
@@ -27,22 +23,26 @@ export const obtainAllSavedRequest = async (req, res) => {
 };
 
 export const searchSavedRequest = async (req, res) => {
+  const ObjectId = mongoose.Types.ObjectId;
   try {
-    const requestData = req.query.term;
-    let filteredRequest = [];
-    if (ObjectId.isValid(requestData)) {
-      filteredRequest = await SavedRequest.find({ _id: new ObjectId(requestData) });
+    const term = req.params.term;
+
+    let filteredSavedRequest;
+    if (ObjectId.isValid(term)) {
+      filteredSavedRequest = await SavedRequest.find({ _id: new ObjectId(term) });
     } else {
-      filteredRequest = await SavedRequest.find({
+      const regex = new RegExp(term, 'i');
+      filteredSavedRequest = await SavedRequest.find({
         $or: [
-          { user: requestData },
-          { enterprise: requestData },
-        ]
+          { user: { $regex: regex } },
+          { enterprise: { $regex: regex } },
+        ],
       });
     }
-    res.status(201).json(filteredRequest);
+
+    res.status(200).json(filteredSavedRequest);
   } catch (error) {
-    console.log(error);
+    console.error(error);
     res.status(500).json({ message: error.message });
   }
 };
@@ -112,7 +112,7 @@ export const updateSavedRequest = async (req, res) => {
 
 export const deleteSavedRequest= async (req, res) => {
   try {
-    const RequestID = req.params.id;
+    const requestID = req.params.id;
 
     try {
       const updated = await SavedRequest.findOneAndUpdate({ _id: requestID }, { deleted: true }, { new: true });

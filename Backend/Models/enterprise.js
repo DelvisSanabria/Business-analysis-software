@@ -11,20 +11,20 @@ const EnterpriseSchema = new mongoose.Schema({
   },
   fieldOfWork: {
     type: String,
-    minlength: 10,
+    minlength: 2,
     maxlength: 100,
     required: true,
   },
   country: {
     type: String,
-    minlength: 10,
+    minlength: 5,
     maxlength: 100,
     required: true,
     unique: true,
   },
   city: {
     type: String,
-    minlength: 10,
+    minlength: 5,
     maxlength: 100,
     required: true,
     unique: true,
