@@ -2,6 +2,7 @@ import { config } from "dotenv";
 config({ path: '../Config/.env' });
 import mongoose from "mongoose";
 import { SavedRequest } from "../Models/savedRequest.js";
+import { User } from "../Models/user.js";
 
 export const obtainAllSavedRequest = async (req, res) => {
   try {
@@ -64,6 +65,11 @@ export const newSavedRequest = async (req, res) => {
     const enterpriseObject = new mongoose.Types.ObjectId(req.body.enterprise);
     let savedRequest = new SavedRequest({ ...req.body, user: userObject, enterprise: enterpriseObject });
     await savedRequest.save();
+
+    await User.findByIdAndUpdate(userObject, {
+      $push: { savedRequests: savedRequest._id }
+    });
+
     res.status(201).json(savedRequest);
   } catch (error) {
     console.log(error);

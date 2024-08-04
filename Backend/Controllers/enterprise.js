@@ -1,13 +1,12 @@
 import { config } from "dotenv";
 config({ path: '../Config/.env' });
 import mongoose from "mongoose";
-import { Enterprise } from "../Models/enterprise.js";;
+import { Enterprise } from "../Models/enterprise.js";
+import { User } from "../Models/user.js";
 import fs from "fs";
 
 
 const domain = process.env.DOMAIN || "http://localhost:3001";
-
-const ObjectId = mongoose.Types.ObjectId;
 
 export const ObtainAllEnterprises = async (req, res) => {
   try {
@@ -73,6 +72,10 @@ export const createEnterprise = async (req, res) => {
     const userObject = new mongoose.Types.ObjectId(req.body.user);
     let enterprise = new Enterprise({ ...req.body, user: userObject });
     await enterprise.save();
+
+    await User.findByIdAndUpdate(userObject, {
+      $push: { enterprises: enterprise._id }
+    });
     res.status(201).json(enterprise);
   } catch (error) {
     console.log(error);
