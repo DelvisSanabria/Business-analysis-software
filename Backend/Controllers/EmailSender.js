@@ -2,7 +2,7 @@ import { config } from "dotenv";
 config({ path: './Config/.env' });
 import nodemailer from "nodemailer";
 import { Router } from "express";
-import { randomNumber, keys, newKeys, timeout } from "../handdlers/recoverypass.js";
+import { randomNumber, keys, newKeys, timeout } from "../Handdlers/recoverypass.js";
 
 
 const emailRouter = Router();

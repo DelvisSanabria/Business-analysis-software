@@ -12,6 +12,7 @@ import Auth from "../Routes/Auth.js";
 import SavedRequest from "../Routes/SavedRequest.js";
 import SendEmailRoutes from "../Routes/SendEmailRoutes.js";
 import ContactRoutes from "../Routes/ContactRoutes.js";
+import RequestRoutes from "../Routes/RequestRoutes.js";
 
 const app = express();
 
@@ -22,7 +23,7 @@ const corsOptions = {
   allowedHeaders: ["Content-Type", "Authorization"]
 };
 
-//conexión a la base de datos
+//DB Connection
 try {
   mongoose.connect(process.env.DATABASE_URL);
 } catch (error) {
@@ -30,7 +31,7 @@ try {
 }
 
 
-//ajustes
+//Settings
 app.set('port',process.env.PORT || 3001);
 
 
@@ -45,6 +46,7 @@ app.use("/enterprises", EnterpriseRoutes)
 app.use("/savedRequest", SavedRequest)
 app.use("/passRecovery" , SendEmailRoutes)
 app.use("/contact", ContactRoutes);
+app.use("/request", RequestRoutes)
 app.use("/images", express.static("images"))
 
 

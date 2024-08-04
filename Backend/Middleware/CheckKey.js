@@ -1,4 +1,4 @@
-import { randomNumber,keys, newKeys } from "../handdlers/recoverypass.js";
+import { randomNumber,keys, newKeys } from "../Handdlers/recoverypass.js";
 
 export const checkKeys = (req, _, next) => {
   const { email } = req.body;
