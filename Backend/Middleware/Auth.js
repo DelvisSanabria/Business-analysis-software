@@ -45,7 +45,28 @@ export const isAdmin = (req, res, next) => {
         if(decode.role === "admin"){
         next();
         }else{
-          res.status(401).send({ message: "Invalid Token" });
+          res.status(401).send({ message: "Invalid User" });
+        }
+      }
+    });
+  } else {
+    res.status(401).send({ message: "No Token" });
+  }
+}
+
+export const isPayUser = (req, res, next) => {
+  const authorization = req.headers.authorization;
+  if (authorization) {
+    const token = authorization.slice(7, authorization.length);
+    jswebtoken.verify(token, process.env.SECRET, (err, decode) => {
+      if (err) {
+        res.status(401).send({ message: "Invalid Token" });
+      } else {
+        req.user = decode;
+        if(decode.plan === "premium"|| decode.plan === "basic"){
+        next();
+        }else{
+          res.status(401).send({ message: "Invalid User u need premium" });
         }
       }
     });
