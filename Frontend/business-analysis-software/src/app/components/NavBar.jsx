@@ -9,7 +9,7 @@ import { useTheme } from "../ThemeContext";
 import Link from "next/link";
 import { useState } from "react";
 
-export default function NavBar() {
+export default function NavBar({ styles }) {
   const pathname = usePathname();
   const { theme, toggleTheme } = useTheme();
   const [showDropdown, setShowDropdown] = useState({
@@ -25,66 +25,68 @@ export default function NavBar() {
   };
 
   return (
-    <div className="flex justify-center items-center py-6">
-      <nav
-        className={`${
-          theme == "light" ? "bg-white dark" : "bg-dark text-white"
-        }  flex px-8 py-3 w-[90%] rounded-[25px] justify-between`}
-      >
-        <div>
-          <Link href="/">
-            {theme == "light" ? (
-              <Image
-                src="/general/Wuau_Logo-color.png"
-                width={140}
-                height={35.16}
-                priority={true}
-                alt="logo"
-              />
-            ) : (
-              <Image
-                src="/general/Wuau_Logo-white.png"
-                width={140}
-                height={35.16}
-                priority={true}
-                alt="logo"
-              />
+    <>
+      <div className={`flex justify-center items-center py-6 ${styles}`}>
+        <nav
+          className={`${
+            theme == "light" ? "bg-white dark" : "bg-dark text-white"
+          }  flex px-8 py-3 w-[90%] rounded-[25px] justify-between`}
+        >
+          <div>
+            <Link href="/">
+              {theme == "light" ? (
+                <Image
+                  src="/general/Wuau_Logo-color.png"
+                  width={140}
+                  height={35.16}
+                  priority={true}
+                  alt="logo"
+                />
+              ) : (
+                <Image
+                  src="/general/Wuau_Logo-white.png"
+                  width={140}
+                  height={35.16}
+                  priority={true}
+                  alt="logo"
+                />
+              )}
+            </Link>
+          </div>
+          <div className="hidden md:flex items-center gap-4">
+            <Menu
+              theme={theme}
+              toggleTheme={toggleTheme}
+              toggleDropdown={toggleDropdown}
+              showDropdown={showDropdown}
+              pathname={pathname}
+            />
+          </div>
+          <div className="flex items-center md:hidden">
+            <button onClick={() => toggleDropdown("menu")}>
+              <IoMenu className="text-2xl" />
+            </button>
+            {showDropdown.menu && (
+              <div
+                className={`w-[220px] absolute flex flex-col items-center right-0 top-0 gap-4 h-screen ${
+                  theme == "light"
+                    ? "bg-white border border-[#36323E]"
+                    : "bg-dark border border-white"
+                } px-8 pt-8 shadow-md`}
+              >
+                <Menu
+                  theme={theme}
+                  toggleTheme={toggleTheme}
+                  toggleDropdown={toggleDropdown}
+                  showDropdown={showDropdown}
+                  pathname={pathname}
+                />
+              </div>
             )}
-          </Link>
-        </div>
-        <div className="hidden md:flex items-center gap-4">
-          <Menu
-            theme={theme}
-            toggleTheme={toggleTheme}
-            toggleDropdown={toggleDropdown}
-            showDropdown={showDropdown}
-            pathname={pathname}
-          />
-        </div>
-        <div className="flex items-center md:hidden">
-          <button onClick={() => toggleDropdown("menu")}>
-            <IoMenu className="text-2xl" />
-          </button>
-          {showDropdown.menu && (
-            <div
-              className={`w-[220px] absolute flex flex-col items-center right-0 top-0 gap-4 h-screen ${
-                theme == "light"
-                  ? "bg-white border border-[#36323E]"
-                  : "bg-dark border border-white"
-              } px-8 pt-8 shadow-md`}
-            >
-              <Menu
-                theme={theme}
-                toggleTheme={toggleTheme}
-                toggleDropdown={toggleDropdown}
-                showDropdown={showDropdown}
-                pathname={pathname}
-              />
-            </div>
-          )}
-        </div>
-      </nav>
-    </div>
+          </div>
+        </nav>
+      </div>
+    </>
   );
 }
 
