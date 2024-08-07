@@ -153,7 +153,7 @@ export const updateUser = async (req, res) => {
     const updated = await User.findOneAndUpdate({ email: usEmail }, update, {
       new: true,
     });
-    res.status(200).json(updated);
+    res.status(201).json(updated);
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: error.message });

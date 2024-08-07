@@ -2,7 +2,7 @@
 import Image from "next/image";
 import { useRouter } from 'next/navigation'
 import Link from "next/link";
-import { useState,useEffect,useRef, useContext } from "react";
+import { useState,useEffect, useContext } from "react";
 import { SessionContext } from "../../Context/Session";
 import NavBar from "../components/NavBar";
 import { antonio } from "../ui/fonts";
@@ -11,6 +11,11 @@ import axios from "axios";
 export default function SignIn() {
 const serverURL = "http://localhost:3001";
 const {userSession, setUserSession} = useContext(SessionContext)
+useEffect(() => {
+  if (userSession && userSession !== null) {
+    router.push("/");
+  }
+})
 const router = useRouter();
 
 const [error, setError] = useState({
@@ -38,9 +43,21 @@ const handleSubmit = async (event) => {
         });
         router.push("/");
         setInput({email: "" , password: ""});
+      }else if (createSession.status === 406) {
+        setError((prev) => ({...prev, password:"Wrong password",}));
+      }else if (createSession.status === 404) {
+        setError((prev) => ({...prev, email:"User not found",}));
       }
-  } catch ({ name, message, response }) {
-    console.error(`${name}: ${message}`);
+  } catch (error) {
+    const { name, message, response } = error;
+      if (response) {
+        if (response.status === 406) {
+          setError((prev) => ({ ...prev, password: "Wrong password" }));
+        } else if (response.status === 404) {
+          setError((prev) => ({ ...prev, email: "User not found" }));
+        }
+      }
+      console.error(`${name}: ${message}`);
   }
 };
 const handleChange = (event) => {
@@ -107,11 +124,10 @@ useEffect(() => {
                 placeholder="Password"
                 name="password"
                 className={`rounded-[10px] text-[#36323E] pl-4 py-1 outline-none w-[200px] md:w-[300px] ${error.password ? "border-[#DC3545]" : ""}`}
-                title={"The password must contain between 8 and 16 characters and at least one of the following:n- Uppercasen- Lowercasen- Digitn- A special character between: !@#$%^&*/"}
                 value={input.password}
                 onChange={handleChange}
               />
-              <div className="relative">
+              <div className="relative my-2 pb-3">
                 <span className="absolute -top-[-5px] md:-top-[-5px] indent-1 -bottom-[9px] text-[0.8em] [color:_rgb(255,0,0)]">{error.password}</span>
               </div>
               <div className="flex flex-col lg:items-center gap-[10px] pt-3">
