@@ -30,9 +30,10 @@ const UserSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    minlength: 5,
+    minlength: 4,
     maxlength: 100,
     required: true,
+    default: "user"
   },
   enterprises: {
     type: [mongoose.Schema.Types.ObjectId],

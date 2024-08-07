@@ -3,9 +3,12 @@ import Image from "next/image";
 import NavBar from "./components/NavBar";
 import { pacifico, antonio } from "./ui/fonts";
 import { useTheme } from "./ThemeContext";
+import { SessionContext } from "../Context/Session";
+import { useContext } from "react";
 
 export default function Home() {
   const { theme } = useTheme();
+  const {userSession, setUserSession} = useContext(SessionContext)
   return (
     <>
       <main

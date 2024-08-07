@@ -1,6 +1,7 @@
 import "./globals.css";
 import { montserrat } from "./ui/fonts";
 import { ThemeProvider } from "./ThemeContext";
+import { SessionProvider } from "../Context/Session";
 
 export const metadata = {
   title: "Wuau Marketing",
@@ -17,7 +18,9 @@ export default function RootLayout({ children }) {
       </head>
       <ThemeProvider>
         <body className={`${montserrat.className} antialiased`}>
-          {children}
+          <SessionProvider>
+            {children}
+          </SessionProvider>
         </body>
       </ThemeProvider>
     </html>

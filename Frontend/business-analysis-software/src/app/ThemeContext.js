@@ -7,6 +7,7 @@ export function useTheme() {
   return useContext(ThemeContext);
 }
 
+
 export function ThemeProvider({ children }) {
   const [theme, setTheme] = useState("light");
   const [isThemeLoaded, setIsThemeLoaded] = useState(false);
@@ -35,3 +36,5 @@ export function ThemeProvider({ children }) {
     </ThemeContext.Provider>
   );
 }
+
+
