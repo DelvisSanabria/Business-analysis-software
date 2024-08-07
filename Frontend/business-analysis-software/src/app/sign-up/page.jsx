@@ -1,6 +1,7 @@
 "use client";
 import Image from "next/image";
 import { useRouter } from 'next/navigation'
+import Link from "next/link";
 import { useState,useEffect,useRef, useContext } from "react";
 import { SessionContext } from "../../Context/Session";
 import NavBar from "../components/NavBar";
@@ -240,7 +241,7 @@ useEffect(() => {
             </div>
         </div>
         <div>
-          <span className="text-white text-xs font-extralight tracking-widest">Already have an account? <a href="/sign-in" className="text-[#FF3E4A] hover:text-[#c2333d]">Sign-in here</a></span>
+          <span className="text-white text-xs font-extralight tracking-widest">Already have an account? <Link href="/sign-in" className="text-[#FF3E4A] hover:text-[#c2333d]">Sign-in here</Link></span>
         </div>
       </section>
       <footer className="flex items-center justify-center py-6">
