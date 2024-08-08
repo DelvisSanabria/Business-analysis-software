@@ -7,15 +7,17 @@ import { SessionContext } from "../../Context/Session";
 import NavBar from "../components/NavBar";
 import { antonio } from "../ui/fonts";
 import axios from "axios";
+import Cookies from "js-cookie";
 
 export default function SignIn() {
 const serverURL = "http://localhost:3001";
-const {userSession, setUserSession} = useContext(SessionContext)
+const {userSession, updateUserSession} = useContext(SessionContext)
 useEffect(() => {
   if (userSession && userSession !== null) {
     router.push("/");
   }
 })
+
 const router = useRouter();
 
 const [error, setError] = useState({
@@ -37,9 +39,11 @@ const handleSubmit = async (event) => {
         },
       })
       if (createSession.status === 200) {
-        setUserSession({
-          user:createSession.data.user,
-          token: createSession.data.token,
+        updateUserSession(createSession.data);
+        Cookies.set('userSession', JSON.stringify(createSession.data), {
+          expires: 2/24,
+          secure: false,
+          httpOnly: true,
         });
         router.push("/");
         setInput({email: "" , password: ""});
@@ -107,7 +111,7 @@ useEffect(() => {
                 type="text"
                 placeholder="Email"
                 name="email"
-                className={`rounded-[10px] text-[#36323E] pl-4 py-1 w-[200px] outline-none md:w-[300px] ${error.email ? "border-[#DC3545]" : ""}`}
+                className={`rounded-[10px] text-[#36323E] pl-4 py-1 w-[200px] outline-none md:w-[220px] lg:w-[300px] ${error.email ? "border-[#DC3545]" : ""}`}
                 value={input.email}
                 onChange={handleChange}
               />
@@ -123,7 +127,7 @@ useEffect(() => {
                 type="password"
                 placeholder="Password"
                 name="password"
-                className={`rounded-[10px] text-[#36323E] pl-4 py-1 outline-none w-[200px] md:w-[300px] ${error.password ? "border-[#DC3545]" : ""}`}
+                className={`rounded-[10px] text-[#36323E] pl-4 py-1 outline-none w-[200px] md:w-[220px] lg:w-[300px] ${error.password ? "border-[#DC3545]" : ""}`}
                 value={input.password}
                 onChange={handleChange}
               />
@@ -148,7 +152,7 @@ useEffect(() => {
         </div>
       </section>
       <footer className="flex items-center justify-center py-6">
-        <Image src={"/general/Wuau_Logo-white.png"} width={150} height={100} />
+        <Image src={"/general/Wuau_Logo-white.png"} width={150} height={100} alt="Wuau logo"/>
       </footer>
     </main>
   );

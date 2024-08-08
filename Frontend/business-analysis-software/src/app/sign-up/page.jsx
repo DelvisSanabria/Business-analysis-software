@@ -157,7 +157,7 @@ useEffect(() => {
                 type="text"
                 placeholder="First name"
                 name="name"
-                className={`rounded-[10px] text-[#36323E] pl-4 py-1 outline-none w-[200px] md:w-[300px] ${error.name ? "border-[#DC3545]" : ""}`}
+                className={`rounded-[10px] text-[#36323E] pl-4 py-1 outline-none w-[200px] md:w-[220px] lg:w-[300px] ${error.name ? "border-[#DC3545]" : ""}`}
                 value={input.name}
                 onChange={handleChange}
               />
@@ -173,7 +173,7 @@ useEffect(() => {
                 type="text"
                 placeholder="Last name"
                 name="lastName"
-                className={`rounded-[10px] text-[#36323E] pl-4 py-1 outline-none w-[200px] md:w-[300px] ${error.lastName ? "border-[#DC3545]" : ""}`}
+                className={`rounded-[10px] text-[#36323E] pl-4 py-1 outline-none w-[200px] md:w-[220px] lg:w-[300px] ${error.lastName ? "border-[#DC3545]" : ""}`}
                 value={input.lastName}
                 onChange={handleChange}
                 />
@@ -189,7 +189,7 @@ useEffect(() => {
                 type="text"
                 placeholder="Email"
                 name="email"
-                className={`rounded-[10px] text-[#36323E] pl-4 py-1 w-[200px] outline-none md:w-[300px] ${error.email ? "border-[#DC3545]" : ""}`}
+                className={`rounded-[10px] text-[#36323E] pl-4 py-1 w-[200px] outline-none md:w-[220px] lg:w-[300px] ${error.email ? "border-[#DC3545]" : ""}`}
                 value={input.email}
                 onChange={handleChange}
               />
@@ -205,7 +205,7 @@ useEffect(() => {
                 type="password"
                 placeholder="Password"
                 name="password"
-                className={`rounded-[10px] text-[#36323E] pl-4 py-1 outline-none w-[200px] md:w-[300px] ${error.password ? "border-[#DC3545]" : ""}`}
+                className={`rounded-[10px] text-[#36323E] pl-4 py-1 outline-none w-[200px] md:w-[220px] lg:w-[300px] ${error.password ? "border-[#DC3545]" : ""}`}
                 title={"The password must contain between 8 and 16 characters and at least one of the following:n- Uppercasen- Lowercasen- Digitn- A special character between: !@#$%^&*/"}
                 value={input.password}
                 onChange={handleChange}
@@ -222,7 +222,7 @@ useEffect(() => {
                 type="password"
                 placeholder="Confirm Password"
                 name="confirmPassword"
-                className={`rounded-[10px] text-[#36323E] pl-4 py-1 outline-none w-[200px] md:w-[300px] ${error.confirmPassword ? "border-[#DC3545]" : ""}`}
+                className={`rounded-[10px] text-[#36323E] pl-4 py-1 outline-none w-[200px] md:w-[220px] lg:w-[300px] ${error.confirmPassword ? "border-[#DC3545]" : ""}`}
                 value={input.confirmPassword}
                 onChange={handleChange}
               />

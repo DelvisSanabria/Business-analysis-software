@@ -9,6 +9,7 @@ import { useContext } from "react";
 export default function Home() {
   const { theme } = useTheme();
   const {userSession, setUserSession} = useContext(SessionContext)
+  console.log(userSession)
   return (
     <>
       <main
