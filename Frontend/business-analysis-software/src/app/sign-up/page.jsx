@@ -7,6 +7,7 @@ import { SessionContext } from "../../Context/Session";
 import NavBar from "../components/NavBar";
 import { antonio } from "../ui/fonts";
 import axios from "axios";
+import Cookies from "js-cookie";
 
 export default function SignUp() {
 const serverURL = "http://localhost:3001";
@@ -55,9 +56,12 @@ const handleSubmit = async () => {
         },
       })
       if (createSession.status === 200) {
-        setUserSession({
-          user:createSession.data.user,
-          token: createSession.data.token,
+        updateUserSession(createSession.data);
+        Cookies.set('userSession', JSON.stringify(createSession.data), {
+          expires: 2/24,
+          secure: false,
+          /* httpOnly: true,
+          sameSite: 'strict' */
         });
         router.push("/");
         const keys = [

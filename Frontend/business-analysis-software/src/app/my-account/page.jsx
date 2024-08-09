@@ -49,19 +49,33 @@ const [input, setInput] = useState({
 const button = useRef();
 
 const handleSubmitUpdate = async () => {
-  const encodedEmail = encodeURIComponent(user.email);
+  const encodedEmail = encodeURIComponent(userSession.user.email);
+  console.log(user)
   try {
-    const response = await axios.patch(`${serverURL}/users/update/`, user, {
+    const response = await axios.patch(`${serverURL}/users/update/${encodedEmail}`, user, {
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${userSession.token}`,
       },
     });
     if (response.status === 201) {
-        setUserSession({
-          user:createSession.data.user,
-          token: createSession.data.token,
+      console.log(user)
+      console.log(response.data);
+        const existingToken = userSession.token;
+
+        const updatedUserSession = {
+          user: response.data,
+          token: existingToken,
+        };
+
+        updateUserSession(updatedUserSession);
+        Cookies.set('userSession', JSON.stringify(updatedUserSession),
+        {
+          expires: 2/24,
+          secure: false,
+          /* httpOnly: true,
+          sameSite: 'strict' */
         });
-        router.push("/");
         const keys = [
           ,
           "name",
@@ -108,10 +122,8 @@ const handleValidation = () => {
   let user = {};
   let errors = {};
   let isValid = true;
-  let hasValue = false;
   for (let field in input) {
      if (input[field]) {
-        hasValue = true;
         if (regexList[field] && !regexList[field].test(input[field])) {
            errors = { ...errors, [field]: message[field] };
            user = { ...user, [field]: "" };
@@ -138,7 +150,7 @@ const handleValidation = () => {
     errors = { ...errors, password: "" };
     isValid = false;
   }
-button.current.disabled = !hasValue  || !isValid;
+/* button.current.disabled = !hasValue  || !isValid; */
   setError((prev) => ({ ...prev, ...errors }));
   setUser((prev) => ({ ...prev, ...user }));
 }
@@ -161,7 +173,7 @@ useEffect(() => {
                 </label>
                 <input
                   type="text"
-                  placeholder="First name"
+                  placeholder={userSession?.user?.name}
                   name="name"
                   className={`rounded-[10px] text-[#36323E] pl-4 py-1 outline-none w-[200px] md:w-[220px] lg:w-[300px] ${
                     error.name ? "border-[#DC3545]" : ""
@@ -181,7 +193,7 @@ useEffect(() => {
                 </label>
                 <input
                   type="text"
-                  placeholder="Last name"
+                  placeholder={userSession?.user?.lastName}
                   name="lastName"
                   className={`rounded-[10px] text-[#36323E] pl-4 py-1 outline-none w-[200px] md:w-[220px] lg:w-[300px] ${
                     error.lastName ? "border-[#DC3545]" : ""
@@ -201,7 +213,7 @@ useEffect(() => {
                 </label>
                 <input
                   type="text"
-                  placeholder="Email"
+                  placeholder={userSession?.user?.email}
                   name="email"
                   className={`rounded-[10px] text-[#36323E] pl-4 py-1 w-[200px] outline-none md:w-[220px] lg:w-[300px] ${
                     error.email ? "border-[#DC3545]" : ""

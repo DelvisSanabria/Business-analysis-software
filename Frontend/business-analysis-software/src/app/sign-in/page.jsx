@@ -43,7 +43,8 @@ const handleSubmit = async (event) => {
         Cookies.set('userSession', JSON.stringify(createSession.data), {
           expires: 2/24,
           secure: false,
-          httpOnly: true,
+          /* httpOnly: true,
+          sameSite: 'strict' */
         });
         router.push("/");
         setInput({email: "" , password: ""});
